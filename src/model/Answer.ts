@@ -1,4 +1,5 @@
 export default interface Answer{
     text: string,
-    correct: boolean
+    correct: boolean,
+    isSelected: boolean,
 }
