@@ -65,7 +65,9 @@ const AnswerRow = styled.div`
 `;
 
 const AnswerText = styled.p`
-
+    font-family: "Jomolhari", serif;
+    color: #000;
+    font-size: 1rem;
 `;
 
 const NavButton = styled.button`
@@ -109,7 +111,8 @@ const QuizModal: React.FC<{
     const getAnswerRow = (answer: Answer) => {
         return (
             <AnswerRow>
-                <input type="checkbox" checked={answer.isSelected} onClick={() => checkAnswer(answer)}/>
+                <input type="checkbox" style={{accentColor: "#344966", height: "100%", aspectRatio: 1}}
+                       checked={answer.isSelected} onClick={() => checkAnswer(answer)}/>
                 <AnswerText>{answer.text}</AnswerText>
             </AnswerRow>
         )
@@ -161,10 +164,15 @@ const QuizModal: React.FC<{
                         PREVIOUS
                     </NavButton>
                 }
-                <NavButton style={{right: 5}}
+                <NavButton style={{
+                    right: 5,
+                    ...(questionNumber === questions.length - 1 && {
+                        backgroundColor: "#969E3D",
+                    }),
+                }}
                            onClick={() => questionNumber === (questions.length - 1) ? submitQuestioner() : navigate("next")}
                 >
-                    NEXT
+                    {questionNumber === (questions.length - 1) ? "FINISH" : "NEXT"}
                 </NavButton>
 
                 <ExitButton onClick={() => close()}>✕</ExitButton>
