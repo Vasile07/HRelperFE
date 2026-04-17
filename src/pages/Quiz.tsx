@@ -9,7 +9,7 @@ const Quiz = () => {
             answers: [
                 {
                     text: "Java",
-                    correct: true,
+                    correct: false,
                     isSelected: false
                 },
                 {
@@ -19,8 +19,8 @@ const Quiz = () => {
                 },
                 {
                     text: "C++",
-                    correct: true,
-                    isSelected: false
+                    correct: false,
+                    isSelected: true
                 },
                 {
                     text: "Python",
@@ -59,7 +59,9 @@ const Quiz = () => {
     return (
         <div style={{width: "100%", height: "100%", backgroundColor: "red"}}>
             <QuizModal questions={questions} close={() => {
-            }} setQuestions={setQuestions}></QuizModal>
+            }} setQuestions={setQuestions} onViewResults={() => {
+            }}></QuizModal>
+            {/*<FeedbackModal questions={questions} close={() => {}}/>*/}
         </div>
     )
 }
