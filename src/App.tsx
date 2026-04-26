@@ -7,7 +7,7 @@ function App() {
       <div style={{flex: 1, backgroundColor: "#fff"}}>
         <Routes>
             <Route path="/AddJobPost" element={<AddNewJobPost/>}/>
-            <Route path="/JobDetails" element={<JobDetails/>}/>
+            <Route path="/JobDetails/:jobId" element={<JobDetails/>}/>
         </Routes>
       </div>
   );

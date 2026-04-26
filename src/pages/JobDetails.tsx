@@ -4,6 +4,7 @@ import api from "../api.ts";
 import QuizModal from "../components/QuizModal.tsx";
 import FeedbackModal from "../components/FeedbackModal.tsx";
 import type Question from "../model/Question.ts";
+import {useParams} from "react-router-dom";
 
 const PageBody = styled.div`
     width: 100%;
@@ -24,15 +25,17 @@ const StartQuizButton = styled.button`
 `;
 
 const JobDetails: React.FC = () => {
+    const {jobId} = useParams();
+    const jobIdNumber = jobId ? parseInt(jobId, 10) : -1;
 
     const [questions, setQuestions] = useState<Question[]>([])
     const [quizModalIsVisible, setQuizModalIsVisible] = useState<boolean>(false)
     const [feedbackModalIsVisible, setFeedbackModalIsVisible] = useState<boolean>(false)
-    const jobId = 1;
+
 
     const fetchQuiz = async () => {
         try {
-            const response = await api.get(`/jobs/${jobId}/quiz`);
+            const response = await api.get(`/jobs/${jobIdNumber}/quiz`);
             setQuestions(response.data);
         } catch (error) {
             console.error('Failed to fetch quiz:', error);
