@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import bgImage from "../assets/add-page-decoration-image.jpg";
+import api from "../api.ts";
 
-// TODO: replace with real auth/session data
-const MOCK_USER = {
-    name: "Andrei Pop",
-    email: "andreiop@gmail.com",
-    role: "HIRING MANAGER",
-};
+// ─── Model ────────────────────────────────────────────────────────────────────
+
+interface UserProfile {
+    name: string;
+    email: string;
+    type: "hiring_manager" | "recruiter";
+}
+
+const formatRole = (type: UserProfile["type"]): string =>
+    type === "hiring_manager" ? "HIRING MANAGER" : "RECRUITER";
 
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 
@@ -133,6 +138,13 @@ const LogoutButton = styled.button`
 
 const Profile: React.FC = () => {
     const navigate = useNavigate();
+    const [user, setUser] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        api.get<UserProfile>("/users/me")
+            .then(res => setUser(res.data))
+            .catch(() => navigate("/Register"));
+    }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -153,9 +165,9 @@ const Profile: React.FC = () => {
                     </svg>
                 </AvatarCircle>
 
-                <UserName>{MOCK_USER.name}</UserName>
-                <UserEmail>{MOCK_USER.email}</UserEmail>
-                <RoleBadge>{MOCK_USER.role}</RoleBadge>
+                <UserName>{user?.name ?? ""}</UserName>
+                <UserEmail>{user?.email ?? ""}</UserEmail>
+                <RoleBadge>{user ? formatRole(user.type) : ""}</RoleBadge>
 
                 <LogoutButton onClick={handleLogout}>LOGOUT</LogoutButton>
             </ProfileCard>
