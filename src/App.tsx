@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import AddNewJobPost from "./pages/AddNewJobPost.tsx";
 import JobDetails from "./pages/JobDetails.tsx";
 import RegisterNewAccount from "./pages/RegisterNewAccount.tsx";
+import DiscoverJobPageDashboard from "./pages/DiscoverJobPageDashboard.tsx";
 
 function App() {
   return (
@@ -10,6 +11,8 @@ function App() {
             <Route path="/AddJobPost" element={<AddNewJobPost/>}/>
             <Route path="/JobDetails/:jobId" element={<JobDetails/>}/>
             <Route path="/Register" element={<RegisterNewAccount/>}/>
+            <Route path="/DiscoverJobs" element={<DiscoverJobPageDashboard/>}/>
+            <Route path="*" element={<div>404 Not Found</div>}/>
         </Routes>
       </div>
   );
