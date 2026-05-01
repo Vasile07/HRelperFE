@@ -5,6 +5,7 @@ import type JobPost from "../model/JobPost.ts";
 import type Technology from "../model/Technology.ts";
 import api from "../api.ts";
 import type Role from "../model/Role.ts";
+import {useParams} from "react-router-dom";
 
 const AddPage = styled.div`
     display: flex;
@@ -251,7 +252,10 @@ const UploadButton = styled.button`
     cursor: pointer;
 `;
 
-const AddNewJobPost: React.FC = () => {
+const ManageJobPost: React.FC = () => {
+
+    const {jobId} = useParams();
+    const jobIdNumber = jobId ? parseInt(jobId, 10) : null;
 
     const [skill, setSkill] = useState<string>("")
     const [guide, setGuide] = useState<string>("")
@@ -265,7 +269,7 @@ const AddNewJobPost: React.FC = () => {
         roleId: undefined,
         departmentId: undefined,
         description: "",
-        skills: ["C#", "OOP", "devops"],
+        skills: [],
         technologies: [],
         guides: []
     });
@@ -293,6 +297,20 @@ const AddNewJobPost: React.FC = () => {
         fetchRoles()
     }, []);
 
+    useEffect(() => {
+        const fetchJobPost = async () => {
+            try {
+                const response = await api.get(`/jobs/${jobIdNumber}`);
+                setJobPost(response.data);
+            } catch (error) {
+                console.error('Failed to fetch technologies:', error);
+            }
+        }
+
+        if (jobIdNumber)
+            fetchJobPost();
+    }, [jobIdNumber]);
+
     const uniqueDepartments = useMemo(() =>
             Array.from(
                 new Map(
@@ -305,7 +323,12 @@ const AddNewJobPost: React.FC = () => {
         [roles]
     );
 
+    useEffect(() => {
+        console.log(jobPost)
+    }, [jobPost]);
+
     const updateField = <K extends keyof JobPost>(field: K, value: JobPost[K]) => {
+        console.log(field + " " + value)
         setJobPost(prev => ({
             ...prev,
             [field]: value
@@ -319,7 +342,19 @@ const AddNewJobPost: React.FC = () => {
     };
 
     const addJobPost = async () => {
-        await api.post("/jobs", jobPost)
+        console.log(jobPost)
+        await api.post("/jobs", {...jobPost, technologies: jobPost.technologies.map(t => t.id)})
+    }
+
+    const updateJobPost = async () => {
+        await api.put(`/jobs/${jobIdNumber}`, {...jobPost, technologies: jobPost.technologies.map(t => t.id)})
+    }
+
+    const manageJobPost = async () => {
+        if (jobIdNumber)
+            await updateJobPost();
+        else
+            await addJobPost();
     }
 
     return (
@@ -339,20 +374,26 @@ const AddNewJobPost: React.FC = () => {
                     </FormHeader>
                     <FormBody>
                         <CustomDropdown
-                            value={jobPost.jobId || ""}
+                            value={jobPost.roleId || ""}
                             onChange={(e) => {
                                 const value = e.target.value === "" ? undefined : parseInt(e.target.value);
-                                updateField("jobId", value);
 
-                                // Safely find the role and update department
-                                if (value !== undefined) {
-                                    const selectedRole = roles.find(r => r.roleId === value);
-                                    if (selectedRole) {
-                                        updateField("departmentId", selectedRole.departmentId);
+                                setJobPost(prev => {
+                                    let departmentId = undefined;
+
+                                    if (value !== undefined) {
+                                        const selectedRole = roles.find(r => r.roleId === value);
+                                        if (selectedRole) {
+                                            departmentId = selectedRole.departmentId;
+                                        }
                                     }
-                                } else {
-                                    updateField("departmentId", undefined);
-                                }
+
+                                    return {
+                                        ...prev,
+                                        roleId: value,
+                                        departmentId: departmentId
+                                    };
+                                });
                             }}
                         >
                             <CustomOption value="">Select a job title</CustomOption>
@@ -373,14 +414,23 @@ const AddNewJobPost: React.FC = () => {
                             value={jobPost.departmentId || ""}
                             onChange={(e) => {
                                 const value = e.target.value === "" ? undefined : parseInt(e.target.value);
-                                updateField("departmentId", value);
 
-                                if (jobPost.jobId) {
-                                    const currentJob = roles.find(r => r.roleId === jobPost.jobId);
-                                    if (currentJob && currentJob.departmentId !== value) {
-                                        updateField("jobId", undefined);
+                                setJobPost(prev => {
+                                    let newRoleId = prev.roleId;
+
+                                    if (prev.roleId) {
+                                        const currentRole = roles.find(r => r.roleId === prev.roleId);
+                                        if (currentRole && currentRole.departmentId !== value) {
+                                            newRoleId = undefined;
+                                        }
                                     }
-                                }
+
+                                    return {
+                                        ...prev,
+                                        departmentId: value,
+                                        roleId: newRoleId
+                                    };
+                                });
                             }}
                         >
                             <CustomOption value="">Select a department</CustomOption>
@@ -518,7 +568,7 @@ const AddNewJobPost: React.FC = () => {
                                 }
                             </CustomList>
                         </div>
-                        <UploadButton onClick={() => addJobPost()}>UPLOAD</UploadButton>
+                        <UploadButton onClick={() => manageJobPost()}>UPLOAD</UploadButton>
                     </FormBody>
                 </FormContainer>
             </PageBody>
@@ -526,4 +576,4 @@ const AddNewJobPost: React.FC = () => {
     )
 }
 
-export default AddNewJobPost
+export default ManageJobPost
