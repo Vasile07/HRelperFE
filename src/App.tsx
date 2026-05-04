@@ -11,7 +11,7 @@ function App() {
       <div style={{flex: 1, backgroundColor: "#fff"}}>
         <Routes>
             <Route path="/Login" element={<LoginPage/>}/>
-            <Route path="/JobViewer" element={<JobViewer/>}/>
+            <Route path="/JobViewer/:id" element={<JobViewer/>}/>
             <Route path="/AddJobPost" element={<AddNewJobPost/>}/>
             <Route path="/JobDetails/:jobId" element={<JobDetails/>}/>
             <Route path="/Register" element={<RegisterNewAccount/>}/>

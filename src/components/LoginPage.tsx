@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import api from "../api";
 import loginImage from "../assets/tipi_tipe_care_se_uita.png";
+
+// ===================== STYLED COMPONENTS =====================
 
 const PageContainer = styled.div`
     display: flex;
@@ -92,6 +96,11 @@ const LoginButton = styled.button`
     &:hover {
         background-color: #2A3B53;
     }
+    
+    &:disabled {
+        background-color: #7a869a;
+        cursor: not-allowed;
+    }
 `;
 
 const RegisterLink = styled.div`
@@ -107,14 +116,43 @@ const RegisterLink = styled.div`
     }
 `;
 
+// ===================== MAIN COMPONENT =====================
+
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Email:", email);
-        console.log("Password:", password);
+        setIsLoading(true);
+
+        try {
+            const response = await api.post("/users/login", {
+                email: email,
+                password: password,
+            });
+
+            // 3. Axios stores the JSON response in the 'data' property automatically
+            const { token } = response.data;
+
+            if (token) {
+                localStorage.setItem("token", token);
+                navigate("/dashboard");
+            }
+        } catch (error : any)  {
+            // 4. Axios error handling
+            // If the server responded with a status outside of the 2xx range
+            if (error.response) {
+                alert(error.response.data.message || "Invalid email or password.");
+            } else {
+                alert("Could not connect to the server. Please try again later.");
+            }
+            console.error("Login Error:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -144,7 +182,9 @@ const LoginPage = () => {
                             required
                         />
                     </Field>
-                    <LoginButton type="submit">LOGIN</LoginButton>
+                    <LoginButton type="submit" disabled={isLoading}>
+                        {isLoading ? "LOGGING IN..." : "LOGIN"}
+                    </LoginButton>
                 </Form>
                 <RegisterLink>
                     Don't have an account?<a href="/register">Register here</a>
