@@ -1,27 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/hero.png";
+import api from "../api";
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// TODO: replace with real fetch from backend when jobs are available
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-interface MockJob {
+interface JobHeader {
     jobId: number;
-    department: string;
     role: string;
+    department: string;
 }
 
-const MOCK_JOBS: MockJob[] = [
-    { jobId: 1, department: "IT", role: "Software Developer" },
-    { jobId: 2, department: "IT", role: "Software Developer" },
-    { jobId: 3, department: "IT", role: "Software Developer" },
-    { jobId: 4, department: "IT", role: "Software Developer" },
-    { jobId: 5, department: "IT", role: "Software Developer" },
-    { jobId: 6, department: "IT", role: "Software Developer" },
-];
-
-// TODO: replace with real auth/session check
+// TODO: replace with real role read from token/session when auth is wired up
 const IS_HIRING_MANAGER = true;
 
 // ─── Page Layout ──────────────────────────────────────────────────────────────
@@ -56,7 +47,6 @@ const HeaderR = styled.span`
     color: #ffeedb;
 `;
 
-// profile icon — clicking redirects to /profile
 const ProfileIcon = styled.div`
     width: 48px;
     height: 48px;
@@ -66,7 +56,6 @@ const ProfileIcon = styled.div`
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.6rem;
     color: #344966;
 
     &:hover {
@@ -91,9 +80,15 @@ const PageTitle = styled.h2`
     margin: 0 0 40px 0;
 `;
 
+// shown while loading or on error
+const StatusText = styled.p`
+    font-family: "Jomolhari", serif;
+    font-size: 1.2rem;
+    color: #555;
+`;
+
 // ─── Job grid ─────────────────────────────────────────────────────────────────
 
-// 3 cards per row — change repeat(3, ...) to repeat(2, ...) etc. if needed
 const JobGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -126,7 +121,6 @@ const CardImage = styled.img`
     display: block;
 `;
 
-// white info box overlaid on the top-left of the card
 const CardInfo = styled.div`
     position: absolute;
     top: 16px;
@@ -160,10 +154,8 @@ const CardLink = styled.p`
     margin-top: 4px;
 `;
 
-// ─── Add job button (Hiring Manager only) ─────────────────────────────────────
+// ─── Add job button ───────────────────────────────────────────────────────────
 
-// position: fixed keeps it always bottom-right regardless of scroll
-// change bottom/right values to reposition it
 const AddJobButton = styled.button`
     position: fixed;
     bottom: 36px;
@@ -190,6 +182,16 @@ const AddJobButton = styled.button`
 
 const DiscoverJobPageDashboard: React.FC = () => {
     const navigate = useNavigate();
+    const [jobs, setJobs] = useState<JobHeader[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        api.get<JobHeader[]>("/jobs")
+            .then(res => setJobs(res.data))
+            .catch(() => setError("Could not load job posts. Please try again later."))
+            .finally(() => setLoading(false));
+    }, []);
 
     return (
         <Page>
@@ -208,24 +210,38 @@ const DiscoverJobPageDashboard: React.FC = () => {
             <Body>
                 <PageTitle>Discover job posts</PageTitle>
 
-                <JobGrid>
-                    {MOCK_JOBS.map(job => (
-                        <JobCard
-                            key={job.jobId}
-                            onClick={() => navigate(`/JobDetails/${job.jobId}`)}
-                        >
-                            <CardImage src={heroImage} alt={job.role} />
-                            <CardInfo>
-                                <CardDepartment>{job.department}</CardDepartment>
-                                <CardRole>{job.role}</CardRole>
-                                <CardLink>See job details →</CardLink>
-                            </CardInfo>
-                        </JobCard>
-                    ))}
-                </JobGrid>
+                {/* loading state */}
+                {loading && <StatusText>Loading job posts…</StatusText>}
+
+                {/* error state */}
+                {!loading && error && <StatusText style={{ color: "#c0392b" }}>{error}</StatusText>}
+
+                {/* empty state */}
+                {!loading && !error && jobs.length === 0 && (
+                    <StatusText>No job posts available yet.</StatusText>
+                )}
+
+                {/* job grid */}
+                {!loading && !error && jobs.length > 0 && (
+                    <JobGrid>
+                        {jobs.map(job => (
+                            <JobCard
+                                key={job.jobId}
+                                onClick={() => navigate(`/JobDetails/${job.jobId}`)}
+                            >
+                                <CardImage src={heroImage} alt={job.role} />
+                                <CardInfo>
+                                    <CardDepartment>{job.department}</CardDepartment>
+                                    <CardRole>{job.role}</CardRole>
+                                    <CardLink>See job details →</CardLink>
+                                </CardInfo>
+                            </JobCard>
+                        ))}
+                    </JobGrid>
+                )}
             </Body>
 
-            {/* Only visible for Hiring Managers — swap IS_HIRING_MANAGER with real role check later */}
+            {/* only visible to Hiring Managers — swap IS_HIRING_MANAGER with real role from token later */}
             {IS_HIRING_MANAGER && (
                 <AddJobButton onClick={() => navigate("/AddJobPost")}>
                     +

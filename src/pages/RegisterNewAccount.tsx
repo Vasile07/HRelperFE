@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import api from "../api";
+
 
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 
@@ -97,6 +100,13 @@ const ErrorText = styled.p`
     margin: 0;
 `;
 
+const SuccessText = styled.p`
+    color: #2e7d32;
+    font-size: 0.9rem;
+    margin: 0;
+    font-family: "Jomolhari", serif;
+`;
+
 // ─── Password hints ───────────────────────────────────────────────────────────
 
 const PasswordHints = styled.div`
@@ -179,6 +189,11 @@ const SignUpButton = styled.button`
     &:hover {
         background-color: #263650;
     }
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 `;
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -199,9 +214,18 @@ interface FormErrors {
     email?: string;
     password?: string;
     role?: string;
+    general?: string;
 }
 
+const ROLE_TYPE_MAP: Record<NonNullable<Role>, string> = {
+    hiringManager: "HIRING_MANAGER",
+    recruiter: "RECRUITER",
+};
+
 const RegisterNewAccount: React.FC = () => {
+
+    const navigate = useNavigate();
+
     const [form, setForm] = useState<RegisterForm>({
         name: "",
         surname: "",
@@ -211,6 +235,8 @@ const RegisterNewAccount: React.FC = () => {
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const updateField = <K extends keyof RegisterForm>(field: K, value: RegisterForm[K]) => {
         setForm(prev => ({ ...prev, [field]: value }));
@@ -221,7 +247,7 @@ const RegisterNewAccount: React.FC = () => {
         length: form.password.length >= 8,
         mixedCase: /[a-z]/.test(form.password) && /[A-Z]/.test(form.password),
         hasNumber: /\d/.test(form.password),
-        hasSpecial: /[^a-zA-Z0-9]/.test(form.password),
+        hasSpecial: /[@!#$%^&*?<>]/.test(form.password),
     };
 
     const validate = (): boolean => {
@@ -245,10 +271,28 @@ const RegisterNewAccount: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         if (!validate()) return;
-        // TODO: wire up to backend register endpoint
-        console.log("Registering:", form);
+
+        setLoading(true);
+        try {
+            await api.post("/users/register", {
+                name: form.name,
+                surname: form.surname,
+                email: form.email,
+                password: form.password,
+                type: ROLE_TYPE_MAP[form.role!],
+            });
+
+            // show success message briefly then redirect to login
+            setSuccess(true);
+            setTimeout(() => navigate("/login"), 2000);
+        } catch (err: any) {
+            const message = err?.response?.data?.message ?? "Registration failed. Please try again.";
+            setErrors(prev => ({ ...prev, general: message }));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -302,7 +346,7 @@ const RegisterNewAccount: React.FC = () => {
                             <HintItem met={passwordChecks.length}>Be at least 8 characters</HintItem>
                             <HintItem met={passwordChecks.mixedCase}>Be a mixture of lower and upper cases</HintItem>
                             <HintItem met={passwordChecks.hasNumber}>Contain numbers</HintItem>
-                            <HintItem met={passwordChecks.hasSpecial}>Contain special characters</HintItem>
+                            <HintItem met={passwordChecks.hasSpecial}>Contain a special character (@, !, #, $, %, ^, &, *, ?, &lt;, &gt;)</HintItem>
                         </PasswordHints>
                         {errors.password && <ErrorText>{errors.password}</ErrorText>}
                     </FieldWrapper>
@@ -330,7 +374,16 @@ const RegisterNewAccount: React.FC = () => {
                         {errors.role && <ErrorText>{errors.role}</ErrorText>}
                     </RoleSection>
 
-                    <SignUpButton onClick={handleSignUp}>SIGN UP</SignUpButton>
+                    {/* general API error */}
+                    {errors.general && <ErrorText>{errors.general}</ErrorText>}
+
+                    {/* success message — shown for 2s before redirect to /login */}
+                    {success && <SuccessText>Account created! Redirecting to login…</SuccessText>}
+
+                    <SignUpButton onClick={handleSignUp} disabled={loading || success}>
+                        {loading ? "Signing up…" : "SIGN UP"}
+                    </SignUpButton>
+
                 </Card>
             </FormSide>
         </RegisterPage>
