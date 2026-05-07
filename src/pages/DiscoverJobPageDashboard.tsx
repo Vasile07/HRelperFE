@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import heroImage from "../assets/hero.png";
+import jobsBackground from "../assets/jobBackground.png";
 import api from "../api";
 import extractRoleFromJwt from "../extractRoleFromJwt.ts";
 import {UserRole} from "../constants/UserRole.tsx";
@@ -22,7 +22,8 @@ const Page = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background-color: #ffeedb;
 `;
 
@@ -70,8 +71,11 @@ const Body = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 60px 100px 60px;
+
+    padding: 20px 60px 0 60px;
+
     flex: 1;
+    min-height: 0; /* IMPORTANT */
 `;
 
 const PageTitle = styled.h2`
@@ -94,9 +98,38 @@ const JobGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
+
     width: 100%;
     max-width: 1200px;
+
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding-right: 8px;
+
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #344966;
+        border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #2a3a52;
+    }
+
+    scrollbar-width: thin;
+    scrollbar-color: #344966 transparent;
 `;
+
 
 // ─── Job card ─────────────────────────────────────────────────────────────────
 
@@ -125,7 +158,9 @@ const CardImage = styled.img`
 const CardInfo = styled.div`
     position: absolute;
     top: 16px;
-    left: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
     background-color: rgba(255, 255, 255, 0.92);
     border-radius: 10px;
     padding: 10px 16px;
@@ -151,8 +186,6 @@ const CardRole = styled.p`
 const CardLink = styled.p`
     font-size: 0.8rem;
     color: #344966;
-    margin: 0;
-    margin-top: 4px;
 `;
 
 // ─── Add job button ───────────────────────────────────────────────────────────
@@ -230,7 +263,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
                                 key={job.jobId}
                                 onClick={() => navigate(`/JobViewer/${job.jobId}`)}
                             >
-                                <CardImage src={heroImage} alt={job.role} />
+                                <CardImage src={jobsBackground} alt={job.role}/>
                                 <CardInfo>
                                     <CardDepartment>{job.department}</CardDepartment>
                                     <CardRole>{job.role}</CardRole>
@@ -242,7 +275,6 @@ const DiscoverJobPageDashboard: React.FC = () => {
                 )}
             </Body>
 
-            {/* only visible to Hiring Managers — swap IS_HIRING_MANAGER with real role from token later */}
             {IS_HIRING_MANAGER && (
                 <AddJobButton onClick={() => navigate("/ManageJobPost")}>
                     +
