@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import React from "react";
 import CustomModal from "./CustomModal.tsx";
+import type Technology from "../model/Technology.ts";
 
 const TechName = styled.p`
     font-family: "Jomolhari", serif;
@@ -22,14 +23,14 @@ const TechDescription = styled.p`
 `;
 
 const TechnologyModal: React.FC<{
-    name: string;
-    description: string;
+    tech: Technology;
     close: () => void;
-}> = ({name, description, close}) => {
+}> = ({tech, close}) => {
+
     const body = (
         <>
-            <TechName>{name}</TechName>
-            <TechDescription>{description}</TechDescription>
+            <TechName>{tech.name}</TechName>
+            <TechDescription key={tech.description}>{tech.description}</TechDescription>
         </>
     );
 
