@@ -143,12 +143,12 @@ const Profile: React.FC = () => {
     useEffect(() => {
         api.get<UserProfile>("/users/me")
             .then(res => setUser(res.data))
-            .catch(() => navigate("/Register"));
+            .catch(() => navigate("/Login"));
     }, [navigate]);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        navigate("/Register");
+        navigate("/Login");
     };
 
     return (

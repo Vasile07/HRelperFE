@@ -141,6 +141,7 @@ const RightColumn = styled.div`
     background-color: #EDEDED;
     padding: 35px 40px;
     border-radius: 4px;
+    height: 100%;
 `;
 
 const SectionTitle = styled.h3`
@@ -326,7 +327,7 @@ const JobViewer: React.FC = () => {
     }, [jobPost?.technologies]);
 
     const handleEdit = () => {
-        navigate(`/edit-job/${id}`);
+        navigate(`/ManageJobPost/${id}`);
     };
 
     const handleDeleteConfirm = async () => {

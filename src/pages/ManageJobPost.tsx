@@ -5,7 +5,7 @@ import type JobPost from "../model/JobPost.ts";
 import type Technology from "../model/Technology.ts";
 import api from "../api.ts";
 import type Role from "../model/Role.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 const AddPage = styled.div`
     display: flex;
@@ -83,6 +83,27 @@ const FormBody = styled.div`
     min-height: 0;
     overflow-y: auto;
     padding-right: 50px;
+
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #344966;
+        border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #2a3a52;
+    }
+
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #344966 transparent;
 `;
 
 const CustomDropdown = styled.select`
@@ -254,6 +275,8 @@ const UploadButton = styled.button`
 
 const ManageJobPost: React.FC = () => {
 
+    const navigate = useNavigate();
+
     const {jobId} = useParams();
     const jobIdNumber = jobId ? parseInt(jobId, 10) : null;
 
@@ -355,6 +378,8 @@ const ManageJobPost: React.FC = () => {
             await updateJobPost();
         else
             await addJobPost();
+
+        navigate(-1);
     }
 
     return (
