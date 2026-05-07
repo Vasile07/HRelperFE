@@ -111,7 +111,7 @@ const QuizModal: React.FC<{
 
     const getAnswerRow = (answer: Answer) => {
         return (
-            <AnswerRow>
+            <AnswerRow key={answer.text}>
                 <input type="checkbox" style={{accentColor: "#344966", height: "100%", aspectRatio: 1}}
                        checked={answer.isSelected} onClick={() => checkAnswer(answer)}/>
                 <AnswerText>{answer.text}</AnswerText>

@@ -96,6 +96,37 @@ const OptionCorrectnessBox = styled.div<{
                             : "transparent"};
 `;
 
+const FeedbackBody = styled.div`
+    display: flex;
+    flex: 1;
+    //margin-left: 30px;
+    flex-direction: column;
+    gap: 60px;
+    overflow-y: auto;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #344966;
+        border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #2a3a52;
+    }
+
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #344966 transparent;
+`
+
 
 const FeedbackModal: React.FC<{
     questions: Question[],
@@ -104,7 +135,7 @@ const FeedbackModal: React.FC<{
 
     const getAnswerRow = (answer: Answer) => {
         return (
-            <AnswerRow>
+            <AnswerRow key={answer.text}>
                 <OptionCorrectnessBox isCorrect={answer.correct} isSelected={answer.isSelected}/>
                 <AnswerText>{answer.text}</AnswerText>
             </AnswerRow>
@@ -115,16 +146,10 @@ const FeedbackModal: React.FC<{
         <Modal>
             <ModalBody>
                 <Title>Feedback</Title>
-                <div style={{
-                    display: "flex",
-                    flex: 1,
-                    marginLeft: 30,
-                    flexDirection: "column",
-                    gap: 60,
-                }}>
+                <FeedbackBody>
                     {
                         questions.map(question => (
-                            <div style={{display: "flex", flexDirection: "column", gap: 15}}>
+                            <div style={{display: "flex", flexDirection: "column", gap: 15}} key={question.question}>
                                 <QuestionText>{question.question}</QuestionText>
                                 <AnswersColumn>
                                     {
@@ -134,7 +159,7 @@ const FeedbackModal: React.FC<{
                             </div>
                         ))
                     }
-                </div>
+                </FeedbackBody>
 
                 <ExitButton onClick={() => close()}>BACK</ExitButton>
             </ModalBody>

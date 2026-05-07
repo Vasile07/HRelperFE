@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import api from "../api";
 import CustomModal from "./CustomModal";
+import type Question from "../model/Question.ts";
+import QuizModal from "./QuizModal.tsx";
+import FeedbackModal from "./FeedbackModal.tsx";
 
 // ===================== STYLED COMPONENTS =====================
 
@@ -244,6 +247,10 @@ const JobViewer: React.FC = () => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
+    const [questions, setQuestions] = useState<Question[]>([])
+    const [quizModalIsVisible, setQuizModalIsVisible] = useState<boolean>(false)
+    const [feedbackModalIsVisible, setFeedbackModalIsVisible] = useState<boolean>(false)
+
     const userRole: UserRole = (localStorage.getItem("userRole") as UserRole) || "RECRUITER";
 
     useEffect(() => {
@@ -276,6 +283,25 @@ const JobViewer: React.FC = () => {
             alert("Could not delete job. Please try again.");
         } finally {
             setIsDeleting(false);
+        }
+    };
+
+    const fetchQuiz = async () => {
+        try {
+            const response = await api.get(`/jobs/${id}/quiz`);
+            setQuestions(response.data);
+        } catch (error) {
+            console.error('Failed to fetch quiz:', error);
+        }
+    };
+
+    const handleStartQuiz = async () => {
+        try {
+            await fetchQuiz();
+            setShowTestModal(false)
+            setQuizModalIsVisible(true);
+        } catch (error) {
+            console.error('Failed to start quiz:', error);
         }
     };
 
@@ -371,7 +397,7 @@ const JobViewer: React.FC = () => {
                                 Prepare for the {jobPost.role} interview by testing your technical knowledge.
                             </ModalText>
                             <ModalActions>
-                                <PrimaryButton onClick={() => setShowTestModal(false)}>
+                                <PrimaryButton onClick={() => handleStartQuiz()}>
                                     Start test
                                 </PrimaryButton>
                             </ModalActions>
@@ -402,6 +428,12 @@ const JobViewer: React.FC = () => {
                     </ConfirmModalBody>
                 </ModalOverlay>
             )}
+
+            {quizModalIsVisible &&
+                <QuizModal questions={questions} close={() => setQuizModalIsVisible(false)} setQuestions={setQuestions}
+                           onViewResults={() => setFeedbackModalIsVisible(true)}></QuizModal>}
+            {feedbackModalIsVisible &&
+                <FeedbackModal questions={questions} close={() => setFeedbackModalIsVisible(false)}/>}
         </PageContainer>
     );
 };

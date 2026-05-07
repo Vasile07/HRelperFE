@@ -135,11 +135,11 @@ const LoginPage = () => {
             });
 
             // 3. Axios stores the JSON response in the 'data' property automatically
-            const { token } = response.data;
+            const token = response.data;
 
             if (token) {
                 localStorage.setItem("token", token);
-                navigate("/dashboard");
+                navigate("/DiscoverJobs");
             }
         } catch (error : any)  {
             // 4. Axios error handling
