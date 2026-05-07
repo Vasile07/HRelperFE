@@ -4,6 +4,7 @@ import RegisterNewAccount from "./pages/RegisterNewAccount.tsx";
 import DiscoverJobPageDashboard from "./pages/DiscoverJobPageDashboard.tsx";
 import LoginPage from "./components/LoginPage.tsx";
 import JobViewer from "./components/JobViewer.tsx";
+import Profile from "./pages/Profile.tsx";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/ManageJobPost/:jobId" element={<ManageJobPost/>}/>
             <Route path="/Register" element={<RegisterNewAccount/>}/>
             <Route path="/DiscoverJobs" element={<DiscoverJobPageDashboard/>}/>
+            <Route path="/Profile" element={<Profile/>}/>
             <Route path="*" element={<div>404 Not Found</div>}/>
         </Routes>
       </div>
