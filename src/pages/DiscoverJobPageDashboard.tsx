@@ -227,7 +227,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
                         {jobs.map(job => (
                             <JobCard
                                 key={job.jobId}
-                                onClick={() => navigate(`/JobDetails/${job.jobId}`)}
+                                onClick={() => navigate(`/JobViewer/${job.jobId}`)}
                             >
                                 <CardImage src={heroImage} alt={job.role} />
                                 <CardInfo>
@@ -243,7 +243,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
 
             {/* only visible to Hiring Managers — swap IS_HIRING_MANAGER with real role from token later */}
             {IS_HIRING_MANAGER && (
-                <AddJobButton onClick={() => navigate("/AddJobPost")}>
+                <AddJobButton onClick={() => navigate("/ManageJobPost")}>
                     +
                 </AddJobButton>
             )}
