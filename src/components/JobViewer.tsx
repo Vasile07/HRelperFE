@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import styled from "styled-components";
 import api from "../api";
 import CustomModal from "./CustomModal";
 import type Question from "../model/Question.ts";
 import QuizModal from "./QuizModal.tsx";
 import FeedbackModal from "./FeedbackModal.tsx";
+import TechnologyModal from "./TechnologyModal.tsx";
+import type Technology from "../model/Technology.ts";
 
 // ===================== STYLED COMPONENTS =====================
 
@@ -29,7 +31,10 @@ const Logo = styled.h1`
     color: black;
     margin: 0;
     font-weight: 400;
-    span { color: #344966; }
+
+    span {
+        color: #344966;
+    }
 `;
 
 const HeaderActions = styled.div`
@@ -47,8 +52,15 @@ const PrimaryButton = styled.button`
     font-family: 'Georgia', serif;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    &:hover { background-color: #2A3B53; }
-    &:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    &:hover {
+        background-color: #2A3B53;
+    }
+
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
 `;
 
 const SecondaryButton = styled.button`
@@ -62,8 +74,14 @@ const SecondaryButton = styled.button`
     cursor: pointer;
     letter-spacing: 1px;
     transition: background-color 0.2s ease;
-    &:hover { background-color: #F2DDBE; }
-    &:disabled { opacity: 0.6; }
+
+    &:hover {
+        background-color: #F2DDBE;
+    }
+
+    &:disabled {
+        opacity: 0.6;
+    }
 `;
 
 const Content = styled.div`
@@ -109,6 +127,7 @@ const BulletList = styled.ul`
     list-style: disc;
     padding-left: 25px;
     margin: 20px 0 0 0;
+
     li {
         font-size: 18px;
         color: #1A1A1A;
@@ -141,6 +160,7 @@ const SkillsList = styled.ul`
     list-style: disc;
     padding-left: 25px;
     margin: 0 0 30px 0;
+
     li {
         font-size: 18px;
         color: #1A1A1A;
@@ -158,7 +178,10 @@ const TechLink = styled.span`
     text-decoration: underline;
     cursor: pointer;
     transition: color 0.2s ease;
-    &:hover { color: #5A7AA8; }
+
+    &:hover {
+        color: #5A7AA8;
+    }
 `;
 
 const TechSeparator = styled.span`
@@ -211,18 +234,15 @@ const ModalActions = styled.div`
 
 const DangerButton = styled(PrimaryButton)`
     background-color: #B0413E;
-    &:hover { background-color: #8E3431; }
+
+    &:hover {
+        background-color: #8E3431;
+    }
 `;
 
 // ===================== TYPES =====================
 
 type UserRole = "RECRUITER" | "HIRING_MANAGER";
-
-interface TechItem {
-    id: number;
-    name: string;
-    description?: string;
-}
 
 interface JobPost {
     jobId: number;
@@ -230,19 +250,19 @@ interface JobPost {
     department: string;
     description: string;
     skills: string[];
-    technologies: TechItem[];
+    technologies: Technology[];
     guides: string[];
 }
 
 // ===================== MAIN COMPONENT =====================
 
 const JobViewer: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const navigate = useNavigate();
 
     const [jobPost, setJobPost] = useState<JobPost | null>(null);
     const [loading, setLoading] = useState(true);
-    const [selectedTech, setSelectedTech] = useState<TechItem | null>(null);
+    const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
     const [showTestModal, setShowTestModal] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -268,6 +288,43 @@ const JobViewer: React.FC = () => {
 
         if (id) fetchJobData();
     }, [id]);
+
+    useEffect(() => {
+        if (!jobPost) return;
+
+        const fetchTechnologyDetails = async () => {
+            for (const tech of jobPost.technologies) {
+                const index = jobPost.technologies.indexOf(tech);
+                try {
+                    const response = await api.get(`/technologies/${tech.id}`);
+                    setJobPost(prevJobPost => {
+                        if (!prevJobPost) return prevJobPost;
+
+                        const updatedTechnologies = [...prevJobPost.technologies];
+                        updatedTechnologies[index] = response.data;
+
+                        return {
+                            ...prevJobPost,
+                            technologies: updatedTechnologies
+                        };
+                    });
+                } catch (error) {
+                    console.error(`Failed to fetch technology ${tech.id}:`, error);
+                }
+            }
+        };
+
+        fetchTechnologyDetails();
+    }, [jobPost?.jobId]);
+
+    useEffect(() => {
+        if (selectedTech && jobPost) {
+            const updatedTech = jobPost.technologies.find(t => t.id === selectedTech.id);
+            if (updatedTech) {
+                setSelectedTech(updatedTech);
+            }
+        }
+    }, [jobPost?.technologies]);
 
     const handleEdit = () => {
         navigate(`/edit-job/${id}`);
@@ -373,20 +430,6 @@ const JobViewer: React.FC = () => {
                 </RightColumn>
             </Content>
 
-            {selectedTech && (
-                <CustomModal
-                    close={() => setSelectedTech(null)}
-                    body={
-                        <>
-                            <ModalTitle>{selectedTech.name}</ModalTitle>
-                            <ModalText>
-                                {selectedTech.description || "Detailed information about this technology."}
-                            </ModalText>
-                        </>
-                    }
-                />
-            )}
-
             {showTestModal && (
                 <CustomModal
                     close={() => setShowTestModal(false)}
@@ -434,6 +477,13 @@ const JobViewer: React.FC = () => {
                            onViewResults={() => setFeedbackModalIsVisible(true)}></QuizModal>}
             {feedbackModalIsVisible &&
                 <FeedbackModal questions={questions} close={() => setFeedbackModalIsVisible(false)}/>}
+
+            {selectedTech && (
+                <TechnologyModal
+                    tech={selectedTech}
+                    close={() => setSelectedTech(null)}
+                />
+            )}
         </PageContainer>
     );
 };
