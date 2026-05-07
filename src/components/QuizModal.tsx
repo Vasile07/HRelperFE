@@ -3,6 +3,8 @@ import styled from "styled-components";
 import React, {useState} from "react";
 import type Answer from "../model/Answer.ts";
 import CustomModal from "./CustomModal.tsx";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import {UserRole} from "../constants/UserRole.tsx";
 
 const Title = styled.p`
     color: #000;
@@ -86,6 +88,9 @@ const QuizModal: React.FC<{
     onViewResults: () => void,
     close: () => void
 }> = ({questions, setQuestions, onViewResults, close}) => {
+
+    if (extractRoleFromJwt() !== UserRole.Recruiter)
+        close();
 
     const [questionNumber, setQuestionNumber] = useState(0)
 

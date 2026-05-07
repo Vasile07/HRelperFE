@@ -8,6 +8,7 @@ import QuizModal from "./QuizModal.tsx";
 import FeedbackModal from "./FeedbackModal.tsx";
 import TechnologyModal from "./TechnologyModal.tsx";
 import type Technology from "../model/Technology.ts";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
 
 // ===================== STYLED COMPONENTS =====================
 
@@ -140,6 +141,7 @@ const RightColumn = styled.div`
     background-color: #EDEDED;
     padding: 35px 40px;
     border-radius: 4px;
+    height: 100%;
 `;
 
 const SectionTitle = styled.h3`
@@ -242,8 +244,6 @@ const DangerButton = styled(PrimaryButton)`
 
 // ===================== TYPES =====================
 
-type UserRole = "RECRUITER" | "HIRING_MANAGER";
-
 interface JobPost {
     jobId: number;
     role: string;
@@ -271,7 +271,7 @@ const JobViewer: React.FC = () => {
     const [quizModalIsVisible, setQuizModalIsVisible] = useState<boolean>(false)
     const [feedbackModalIsVisible, setFeedbackModalIsVisible] = useState<boolean>(false)
 
-    const userRole: UserRole = (localStorage.getItem("userRole") as UserRole) || "RECRUITER";
+    const userRole: string = extractRoleFromJwt();
 
     useEffect(() => {
         const fetchJobData = async () => {
@@ -327,7 +327,7 @@ const JobViewer: React.FC = () => {
     }, [jobPost?.technologies]);
 
     const handleEdit = () => {
-        navigate(`/edit-job/${id}`);
+        navigate(`/ManageJobPost/${id}`);
     };
 
     const handleDeleteConfirm = async () => {
