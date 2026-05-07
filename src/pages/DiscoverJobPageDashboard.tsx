@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import heroImage from "../assets/hero.png";
 import api from "../api";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import {UserRole} from "../constants/UserRole.tsx";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,8 +14,7 @@ interface JobHeader {
     department: string;
 }
 
-// TODO: replace with real role read from token/session when auth is wired up
-const IS_HIRING_MANAGER = true;
+const IS_HIRING_MANAGER = extractRoleFromJwt() === UserRole.HiringManager;
 
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 

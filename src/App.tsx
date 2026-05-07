@@ -5,6 +5,8 @@ import DiscoverJobPageDashboard from "./pages/DiscoverJobPageDashboard.tsx";
 import LoginPage from "./components/LoginPage.tsx";
 import JobViewer from "./components/JobViewer.tsx";
 import Profile from "./pages/Profile.tsx";
+import ProtectedRoute from "./ProtectedRoute.tsx";
+import {UserRole} from "./constants/UserRole.tsx";
 
 function App() {
   return (
@@ -12,8 +14,16 @@ function App() {
         <Routes>
             <Route path="/Login" element={<LoginPage/>}/>
             <Route path="/JobViewer/:id" element={<JobViewer/>}/>
-            <Route path="/ManageJobPost" element={<ManageJobPost/>}/>
-            <Route path="/ManageJobPost/:jobId" element={<ManageJobPost/>}/>
+            <Route path="/ManageJobPost" element={
+                <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
+                    <ManageJobPost/>
+                </ProtectedRoute>
+            }/>
+            <Route path="/ManageJobPost/:jobId" element={
+                <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
+                    <ManageJobPost/>
+                </ProtectedRoute>
+            }/>
             <Route path="/Register" element={<RegisterNewAccount/>}/>
             <Route path="/DiscoverJobs" element={<DiscoverJobPageDashboard/>}/>
             <Route path="/Profile" element={<Profile/>}/>

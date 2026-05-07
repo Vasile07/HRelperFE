@@ -2,6 +2,8 @@ import type Question from "../model/Question.ts";
 import styled from "styled-components";
 import React from "react";
 import type Answer from "../model/Answer.ts";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import {UserRole} from "../constants/UserRole.tsx";
 
 const Modal = styled.div`
     position: fixed;
@@ -132,6 +134,9 @@ const FeedbackModal: React.FC<{
     questions: Question[],
     close: () => void
 }> = ({questions, close}) => {
+
+    if (extractRoleFromJwt() !== UserRole.Recruiter)
+        close();
 
     const getAnswerRow = (answer: Answer) => {
         return (
