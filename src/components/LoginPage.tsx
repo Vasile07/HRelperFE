@@ -187,7 +187,7 @@ const LoginPage = () => {
                     </LoginButton>
                 </Form>
                 <RegisterLink>
-                    Don't have an account?<a href="/register">Register here</a>
+                    Don't have an account?<a href="/Register">Register here</a>
                 </RegisterLink>
             </LeftSide>
             <RightSide>
