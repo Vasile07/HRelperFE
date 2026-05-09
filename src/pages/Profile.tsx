@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import bgImage from "../assets/add-page-decoration-image.jpg";
-import api from "../api.ts";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import convertTokenToJwt from "../convertTokenToJwt.ts";
 
 // ─── Model ────────────────────────────────────────────────────────────────────
 
@@ -141,10 +142,23 @@ const Profile: React.FC = () => {
     const [user, setUser] = useState<UserProfile | null>(null);
 
     useEffect(() => {
-        api.get<UserProfile>("/users/me")
-            .then(res => setUser(res.data))
-            .catch(() => navigate("/Login"));
-    }, [navigate]);
+        // api.get<UserProfile>("/users/me")
+        //     .then(res => setUser(res.data))
+        //     .catch(() => navigate("/Login"));
+
+        const idToken = localStorage.getItem("idToken")
+        const role = extractRoleFromJwt()
+        if (idToken) {
+            const idTokenJwt = convertTokenToJwt(idToken)
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setUser({
+                name: idTokenJwt.getField("name"),
+                email: idTokenJwt.getField("email"),
+                type: role,
+            })
+        }
+
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -153,15 +167,15 @@ const Profile: React.FC = () => {
 
     return (
         <Page>
-            <Background src={bgImage} alt="" />
+            <Background src={bgImage} alt=""/>
 
             <BackButton onClick={() => navigate(-1)}>BACK</BackButton>
 
             <ProfileCard>
                 <AvatarCircle>
                     <svg viewBox="0 0 24 24" width="48" height="48" fill="#344966" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="7" r="4" />
-                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                        <circle cx="12" cy="7" r="4"/>
+                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
                     </svg>
                 </AvatarCircle>
 
