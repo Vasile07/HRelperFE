@@ -99,7 +99,7 @@ const CustomModal: React.FC<{
         setIsClosing(true);
         setTimeout(() => {
             close();
-        }, 300); // Match animation duration
+        }, 280); // Match animation duration
     };
 
     return (
