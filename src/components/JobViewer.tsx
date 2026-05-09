@@ -276,6 +276,8 @@ const JobViewer: React.FC = () => {
 
     const userRole: string = extractRoleFromJwt();
 
+    const [quizLoading, setQuizLoading] = useState(false)
+
     useEffect(() => {
         const fetchJobData = async () => {
             try {
@@ -348,10 +350,13 @@ const JobViewer: React.FC = () => {
 
     const fetchQuiz = async () => {
         try {
+            setQuizLoading(true)
             const response = await api.get(`/jobs/${id}/quiz`);
             setQuestions(response.data);
         } catch (error) {
             console.error('Failed to fetch quiz:', error);
+        } finally {
+            setQuizLoading(false)
         }
     };
 
@@ -437,6 +442,9 @@ const JobViewer: React.FC = () => {
                 <CustomModal
                     close={() => setShowTestModal(false)}
                     body={
+                        quizLoading
+                            ? <div style={{width: "100%", height: "100%"}}><LoadingComponent color={"#FFF"}/></div>
+                            :
                         <>
                             <ModalTitle>Test your knowledge</ModalTitle>
                             <ModalText>
