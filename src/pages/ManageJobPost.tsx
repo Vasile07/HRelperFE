@@ -6,6 +6,7 @@ import type Technology from "../model/Technology.ts";
 import api from "../api.ts";
 import type Role from "../model/Role.ts";
 import {useNavigate, useParams} from "react-router-dom";
+import LoadingComponent from "../components/LoadingComponent.tsx";
 
 const AddPage = styled.div`
     display: flex;
@@ -262,6 +263,8 @@ const TechPopupItem = styled.div`
 const UploadButton = styled.button`
     width: fit-content;
     padding: 15px 60px;
+    min-width: 200px;
+    min-height: 80px;
     background-color: #344966;
     color: #FFF;
     position: sticky;
@@ -271,6 +274,40 @@ const UploadButton = styled.button`
     font-size: 30px;
     font-family: "Jomolhari", serif;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+const JumpingDots = () => (
+    <DotsContainer>
+        <Dot style={{animationDelay: '0s'}}/>
+        <Dot style={{animationDelay: '0.2s'}}/>
+        <Dot style={{animationDelay: '0.4s'}}/>
+    </DotsContainer>
+);
+
+const DotsContainer = styled.div`
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+`;
+
+const Dot = styled.div`
+    width: 10px;
+    height: 10px;
+    background-color: #FFF;
+    border-radius: 50%;
+    animation: jump 0.6s ease-in-out infinite;
+
+    @keyframes jump {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
 `;
 
 const ManageJobPost: React.FC = () => {
@@ -287,6 +324,10 @@ const ManageJobPost: React.FC = () => {
     const [allTechnologies, setAllTechnologies] = useState<Technology[]>([]);
     const [roles, setRoles] = useState<Role[]>([])
 
+    const [techLoading, setTechLoading] = useState(true)
+    const [rolesLoading, setRolesLoading] = useState(true)
+    const [jobLoading, setJobLoading] = useState(true)
+
     const [jobPost, setJobPost] = useState<JobPost>({
         jobId: undefined,
         roleId: undefined,
@@ -298,12 +339,25 @@ const ManageJobPost: React.FC = () => {
     });
 
     useEffect(() => {
+        const handlePageShow = (event: PageTransitionEvent) => {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+
+        window.addEventListener('pageshow', handlePageShow);
+        return () => window.removeEventListener('pageshow', handlePageShow);
+    }, []);
+
+    useEffect(() => {
         const fetchTechnologies = async () => {
             try {
                 const response = await api.get(`/technologies`);
                 setAllTechnologies(response.data);
             } catch (error) {
                 console.error('Failed to fetch technologies:', error);
+            } finally {
+                setTechLoading(false)
             }
         }
 
@@ -313,26 +367,44 @@ const ManageJobPost: React.FC = () => {
                 setRoles(response.data);
             } catch (error) {
                 console.error('Failed to fetch roles:', error);
+            } finally {
+                setRolesLoading(false)
             }
         }
 
-        fetchTechnologies()
-        fetchRoles()
+        fetchTechnologies();
+        fetchRoles();
     }, []);
 
     useEffect(() => {
+        if (!jobIdNumber)
+            setJobLoading(false)
+
+        if (!jobIdNumber || roles.length === 0) return;
+
         const fetchJobPost = async () => {
             try {
                 const response = await api.get(`/jobs/${jobIdNumber}`);
-                setJobPost(response.data);
+                console.log(response.data);
+
+                setJobPost({
+                    jobId: response.data.jobId,
+                    roleId: roles.find(role => role.roleName === response.data.role)?.roleId,
+                    departmentId: roles.find(role => role.departmentName === response.data.department)?.departmentId,
+                    description: response.data.description,
+                    skills: response.data.skills,
+                    technologies: response.data.technologies,
+                    guides: response.data.guides
+                });
             } catch (error) {
-                console.error('Failed to fetch technologies:', error);
+                console.error('Failed to fetch job post:', error);
+            } finally {
+                setJobLoading(false)
             }
         }
 
-        if (jobIdNumber)
-            fetchJobPost();
-    }, [jobIdNumber]);
+        fetchJobPost();
+    }, [jobIdNumber, roles]);
 
     const uniqueDepartments = useMemo(() =>
             Array.from(
@@ -346,12 +418,7 @@ const ManageJobPost: React.FC = () => {
         [roles]
     );
 
-    useEffect(() => {
-        console.log(jobPost)
-    }, [jobPost]);
-
     const updateField = <K extends keyof JobPost>(field: K, value: JobPost[K]) => {
-        console.log(field + " " + value)
         setJobPost(prev => ({
             ...prev,
             [field]: value
@@ -365,7 +432,6 @@ const ManageJobPost: React.FC = () => {
     };
 
     const addJobPost = async () => {
-        console.log(jobPost)
         await api.post("/jobs", {...jobPost, technologies: jobPost.technologies.map(t => t.id)})
     }
 
@@ -373,14 +439,24 @@ const ManageJobPost: React.FC = () => {
         await api.put(`/jobs/${jobIdNumber}`, {...jobPost, technologies: jobPost.technologies.map(t => t.id)})
     }
 
-    const manageJobPost = async () => {
-        if (jobIdNumber)
-            await updateJobPost();
-        else
-            await addJobPost();
+    const [isUploading, setIsUploading] = useState(false);
 
-        navigate(-1);
+    const manageJobPost = async () => {
+        setIsUploading(true);
+        console.log(jobPost)
+        try {
+            if (jobIdNumber)
+                await updateJobPost();
+            else
+                await addJobPost();
+            navigate(-1);
+        } finally {
+            setIsUploading(false);
+        }
     }
+
+    if (techLoading || rolesLoading || jobLoading) return <div style={{width: "100vw", height: "100vh"}}>
+        <LoadingComponent color={"#FFEEDB"}/></div>;
 
     return (
         <AddPage>
@@ -593,7 +669,10 @@ const ManageJobPost: React.FC = () => {
                                 }
                             </CustomList>
                         </div>
-                        <UploadButton onClick={() => manageJobPost()}>UPLOAD</UploadButton>
+
+                        <UploadButton onClick={manageJobPost} disabled={isUploading}>
+                            {isUploading ? <JumpingDots/> : 'UPLOAD'}
+                        </UploadButton>
                     </FormBody>
                 </FormContainer>
             </PageBody>

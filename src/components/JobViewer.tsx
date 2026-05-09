@@ -9,6 +9,7 @@ import FeedbackModal from "./FeedbackModal.tsx";
 import TechnologyModal from "./TechnologyModal.tsx";
 import type Technology from "../model/Technology.ts";
 import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import LoadingComponent from "./LoadingComponent.tsx";
 
 // ===================== STYLED COMPONENTS =====================
 
@@ -17,7 +18,7 @@ const PageContainer = styled.div`
     background-color: #fff;
     padding: 30px 50px;
     box-sizing: border-box;
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: "Jomolhari", serif;
 `;
 
 const Header = styled.header`
@@ -32,6 +33,7 @@ const Logo = styled.h1`
     color: black;
     margin: 0;
     font-weight: 400;
+    font-family: "Jomolhari", serif;
 
     span {
         color: #344966;
@@ -50,7 +52,7 @@ const PrimaryButton = styled.button`
     border-radius: 25px;
     padding: 14px 28px;
     font-size: 16px;
-    font-family: 'Georgia', serif;
+    font-family: "Jomolhari", serif;
     cursor: pointer;
     transition: background-color 0.2s ease;
 
@@ -71,7 +73,7 @@ const SecondaryButton = styled.button`
     border-radius: 25px;
     padding: 14px 28px;
     font-size: 16px;
-    font-family: 'Georgia', serif;
+    font-family: "Jomolhari", serif;
     cursor: pointer;
     letter-spacing: 1px;
     transition: background-color 0.2s ease;
@@ -108,6 +110,7 @@ const RoleTitle = styled.h2`
     color: #1A1A1A;
     margin: 0 0 8px 0;
     font-weight: 400;
+    font-family: "Jomolhari", serif;
 `;
 
 const RoleDepartment = styled.p`
@@ -121,7 +124,7 @@ const InterviewGuideHeader = styled.div`
     color: #fff;
     padding: 14px 25px;
     font-size: 26px;
-    font-family: 'Georgia', serif;
+    font-family: "Jomolhari", serif;
 `;
 
 const BulletList = styled.ul`
@@ -214,14 +217,14 @@ const ConfirmModalBody = styled.div`
 
 const ModalTitle = styled.h2`
     color: #344966;
-    font-family: 'Georgia', serif;
+    font-family: "Jomolhari", serif;
     margin: 0 0 20px 0;
     font-size: 28px;
 `;
 
 const ModalText = styled.p`
     color: #1A1A1A;
-    font-family: 'Georgia', serif;
+    font-family: "Jomolhari", serif;
     font-size: 18px;
     line-height: 1.5;
     margin: 0 0 25px 0;
@@ -362,7 +365,7 @@ const JobViewer: React.FC = () => {
         }
     };
 
-    if (loading) return <PageContainer>Loading Job Details...</PageContainer>;
+    if (loading) return <div style={{width: "100vw", height: "100vh"}}><LoadingComponent color={"#FFEEDB"}/></div>;
     if (!jobPost) return <PageContainer>Job not found or error loading data.</PageContainer>;
 
     return (

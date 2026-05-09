@@ -5,6 +5,7 @@ import jobsBackground from "../assets/jobBackground.png";
 import api from "../api";
 import extractRoleFromJwt from "../extractRoleFromJwt.ts";
 import {UserRole} from "../constants/UserRole.tsx";
+import LoadingComponent from "../components/LoadingComponent.tsx";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -245,7 +246,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
                 <PageTitle>Discover job posts</PageTitle>
 
                 {/* loading state */}
-                {loading && <StatusText>Loading job posts…</StatusText>}
+                {loading && <LoadingComponent color={"#FFEEDB"}/>}
 
                 {/* error state */}
                 {!loading && error && <StatusText style={{ color: "#c0392b" }}>{error}</StatusText>}
