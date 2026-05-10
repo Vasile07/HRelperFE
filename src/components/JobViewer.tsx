@@ -16,7 +16,7 @@ import LoadingComponent from "./LoadingComponent.tsx";
 const PageContainer = styled.div`
     min-height: 100vh;
     background-color: #fff;
-    padding: 30px 50px;
+    padding: 15px 50px 15px 0;
     box-sizing: border-box;
     font-family: "Jomolhari", serif;
 `;
@@ -25,7 +25,18 @@ const Header = styled.header`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+`;
+
+const AppTitleButton = styled.button`
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    margin-left: 35px;
 `;
 
 const Logo = styled.h1`
@@ -378,7 +389,9 @@ const JobViewer: React.FC = () => {
     return (
         <PageContainer>
             <Header>
-                <Logo>H<span>R</span>elper</Logo>
+                <AppTitleButton onClick={() => navigate("/DiscoverJobs")}>
+                    <Logo>H<span>R</span>elper</Logo>
+                </AppTitleButton>
                 <HeaderActions>
                     {userRole === "RECRUITER" && (
                         <PrimaryButton onClick={() => setShowTestModal(true)}>
@@ -447,17 +460,17 @@ const JobViewer: React.FC = () => {
                         quizLoading
                             ? <div style={{width: "100%", height: "100%"}}><LoadingComponent color={"#FFF"}/></div>
                             :
-                        <>
-                            <ModalTitle>Test your knowledge</ModalTitle>
-                            <ModalText>
-                                Prepare for the {jobPost.role} interview by testing your technical knowledge.
-                            </ModalText>
-                            <ModalActions>
-                                <PrimaryButton onClick={() => handleStartQuiz()}>
-                                    Start test
-                                </PrimaryButton>
-                            </ModalActions>
-                        </>
+                            <>
+                                <ModalTitle>Test your knowledge</ModalTitle>
+                                <ModalText>
+                                    Prepare for the {jobPost.role} interview by testing your technical knowledge.
+                                </ModalText>
+                                <ModalActions>
+                                    <PrimaryButton onClick={() => handleStartQuiz()}>
+                                        Start test
+                                    </PrimaryButton>
+                                </ModalActions>
+                            </>
                     }
                 />
             )}

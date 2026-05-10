@@ -15,8 +15,6 @@ interface JobHeader {
     department: string;
 }
 
-const IS_HIRING_MANAGER = extractRoleFromJwt() === UserRole.HiringManager;
-
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 
 const Page = styled.div`
@@ -220,6 +218,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
     const [jobs, setJobs] = useState<JobHeader[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const IS_HIRING_MANAGER = extractRoleFromJwt() === UserRole.HiringManager;
 
     useEffect(() => {
         api.get<JobHeader[]>("/jobs")

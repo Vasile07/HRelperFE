@@ -20,8 +20,19 @@ const AddPage = styled.div`
 const PageHeader = styled.div`
     display: flex;
     flex-direction: row;
-    padding: 20px 20px;
+    padding: 15px 0;
     flex-shrink: 0;
+`;
+
+const AppTitleButton = styled.button`
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    margin-left: 35px;
 `;
 
 const HeaderText = styled.p`
@@ -72,6 +83,13 @@ const FormHeaderText = styled.p`
     font-size: 2rem;
     font-family: "Jomolhari", serif;
 `;
+
+const FormBodyWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow-y: auto;
+`
 
 const FormBody = styled.div`
     display: flex;
@@ -262,16 +280,17 @@ const TechPopupItem = styled.div`
 
 const UploadButton = styled.button`
     width: fit-content;
-    padding: 15px 60px;
-    min-width: 200px;
-    min-height: 80px;
+    padding: 15px 50px;
+    min-width: 210px;
+    min-height: 65px;
     background-color: #344966;
     color: #FFF;
     position: sticky;
     align-self: flex-end;
-    bottom: 0;
+    bottom: 20px;
+    right: 20px;
     border-radius: 30px;
-    font-size: 30px;
+    font-size: 25px;
     font-family: "Jomolhari", serif;
     cursor: pointer;
     display: flex;
@@ -461,9 +480,11 @@ const ManageJobPost: React.FC = () => {
     return (
         <AddPage>
             <PageHeader>
-                <HeaderText>H</HeaderText>
-                <HeaderText style={{color: "#344966"}}>R</HeaderText>
-                <HeaderText>elper</HeaderText>
+                <AppTitleButton onClick={() => navigate(-1)}>
+                    <HeaderText>H</HeaderText>
+                    <HeaderText style={{color: "#344966"}}>R</HeaderText>
+                    <HeaderText>elper</HeaderText>
+                </AppTitleButton>
             </PageHeader>
             <PageBody>
                 <ImageContainer>
@@ -473,207 +494,208 @@ const ManageJobPost: React.FC = () => {
                     <FormHeader>
                         <FormHeaderText>Add new position</FormHeaderText>
                     </FormHeader>
-                    <FormBody>
-                        <CustomDropdown
-                            value={jobPost.roleId || ""}
-                            onChange={(e) => {
-                                const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+                    <FormBodyWrapper>
+                        <FormBody>
+                            <CustomDropdown
+                                value={jobPost.roleId || ""}
+                                onChange={(e) => {
+                                    const value = e.target.value === "" ? undefined : parseInt(e.target.value);
 
-                                setJobPost(prev => {
-                                    let departmentId = undefined;
+                                    setJobPost(prev => {
+                                        let departmentId = undefined;
 
-                                    if (value !== undefined) {
-                                        const selectedRole = roles.find(r => r.roleId === value);
-                                        if (selectedRole) {
-                                            departmentId = selectedRole.departmentId;
+                                        if (value !== undefined) {
+                                            const selectedRole = roles.find(r => r.roleId === value);
+                                            if (selectedRole) {
+                                                departmentId = selectedRole.departmentId;
+                                            }
                                         }
-                                    }
 
-                                    return {
-                                        ...prev,
-                                        roleId: value,
-                                        departmentId: departmentId
-                                    };
-                                });
-                            }}
-                        >
-                            <CustomOption value="">Select a job title</CustomOption>
-                            {roles
-                                .filter(role =>
-                                    jobPost.departmentId === undefined ||
-                                    role.departmentId === jobPost.departmentId
-                                )
-                                .map(role => (
-                                    <CustomOption key={role.roleId} value={role.roleId}>
-                                        {role.roleName}
+                                        return {
+                                            ...prev,
+                                            roleId: value,
+                                            departmentId: departmentId
+                                        };
+                                    });
+                                }}
+                            >
+                                <CustomOption value="">Select a job title</CustomOption>
+                                {roles
+                                    .filter(role =>
+                                        jobPost.departmentId === undefined ||
+                                        role.departmentId === jobPost.departmentId
+                                    )
+                                    .map(role => (
+                                        <CustomOption key={role.roleId} value={role.roleId}>
+                                            {role.roleName}
+                                        </CustomOption>
+                                    ))
+                                }
+                            </CustomDropdown>
+
+                            <CustomDropdown
+                                value={jobPost.departmentId || ""}
+                                onChange={(e) => {
+                                    const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+
+                                    setJobPost(prev => {
+                                        let newRoleId = prev.roleId;
+
+                                        if (prev.roleId) {
+                                            const currentRole = roles.find(r => r.roleId === prev.roleId);
+                                            if (currentRole && currentRole.departmentId !== value) {
+                                                newRoleId = undefined;
+                                            }
+                                        }
+
+                                        return {
+                                            ...prev,
+                                            departmentId: value,
+                                            roleId: newRoleId
+                                        };
+                                    });
+                                }}
+                            >
+                                <CustomOption value="">Select a department</CustomOption>
+                                {uniqueDepartments.map(department => (
+                                    <CustomOption key={department.departmentId} value={department.departmentId}>
+                                        {department.departmentName}
                                     </CustomOption>
-                                ))
-                            }
-                        </CustomDropdown>
-
-                        <CustomDropdown
-                            value={jobPost.departmentId || ""}
-                            onChange={(e) => {
-                                const value = e.target.value === "" ? undefined : parseInt(e.target.value);
-
-                                setJobPost(prev => {
-                                    let newRoleId = prev.roleId;
-
-                                    if (prev.roleId) {
-                                        const currentRole = roles.find(r => r.roleId === prev.roleId);
-                                        if (currentRole && currentRole.departmentId !== value) {
-                                            newRoleId = undefined;
-                                        }
+                                ))}
+                            </CustomDropdown>
+                            <div>
+                                <CustomLabelHeader style={{border: 0}}>
+                                    <CustomLabelText>
+                                        Job description
+                                    </CustomLabelText>
+                                </CustomLabelHeader>
+                                <CustomTextArea
+                                    value={jobPost.description}
+                                    onChange={(e) => updateField("description", e.target.value)}
+                                />
+                            </div>
+                            <div id={"must_have_skills_container"}>
+                                <CustomLabelHeader>
+                                    <CustomLabelText>
+                                        Must have skills
+                                    </CustomLabelText>
+                                </CustomLabelHeader>
+                                <SkillInputWrapper>
+                                    <SkillInput
+                                        value={skill}
+                                        onChange={e => setSkill(e.target.value)}
+                                    />
+                                    <CustomButton onClick={() => {
+                                        updateField("skills", [skill, ...jobPost.skills])
+                                        setSkill("");
+                                    }}>+</CustomButton>
+                                </SkillInputWrapper>
+                                <CustomList>
+                                    {
+                                        jobPost.skills.map(skill => (
+                                            <CustomListItem>
+                                                <SkillText>
+                                                    {skill}
+                                                </SkillText>
+                                                <CustomButton
+                                                    onClick={() => updateField("skills", jobPost.skills.filter(s => s !== skill))}
+                                                >x</CustomButton>
+                                            </CustomListItem>
+                                        ))
                                     }
+                                </CustomList>
+                            </div>
+                            <div id={"technologies_container"} style={{position: 'relative'}}>
+                                <CustomLabelHeader>
+                                    <CustomLabelText>
+                                        Technologies
+                                    </CustomLabelText>
+                                    <CustomButton
+                                        style={{fontSize: 30}}
+                                        onClick={() => setShowTechPopup(!showTechPopup)}
+                                    >
+                                        +
+                                    </CustomButton>
+                                </CustomLabelHeader>
 
-                                    return {
-                                        ...prev,
-                                        departmentId: value,
-                                        roleId: newRoleId
-                                    };
-                                });
-                            }}
-                        >
-                            <CustomOption value="">Select a department</CustomOption>
-                            {uniqueDepartments.map(department => (
-                                <CustomOption key={department.departmentId} value={department.departmentId}>
-                                    {department.departmentName}
-                                </CustomOption>
-                            ))}
-                        </CustomDropdown>
-                        <div>
-                            <CustomLabelHeader style={{border: 0}}>
-                                <CustomLabelText>
-                                    Job description
-                                </CustomLabelText>
-                            </CustomLabelHeader>
-                            <CustomTextArea
-                                value={jobPost.description}
-                                onChange={(e) => updateField("description", e.target.value)}
-                            />
-                        </div>
-                        <div id={"must_have_skills_container"}>
-                            <CustomLabelHeader>
-                                <CustomLabelText>
-                                    Must have skills
-                                </CustomLabelText>
-                            </CustomLabelHeader>
-                            <SkillInputWrapper>
-                                <SkillInput
-                                    value={skill}
-                                    onChange={e => setSkill(e.target.value)}
-                                />
-                                <CustomButton onClick={() => {
-                                    updateField("skills", [skill, ...jobPost.skills])
-                                    setSkill("");
-                                }}>+</CustomButton>
-                            </SkillInputWrapper>
-                            <CustomList>
-                                {
-                                    jobPost.skills.map(skill => (
-                                        <CustomListItem>
-                                            <SkillText>
-                                                {skill}
-                                            </SkillText>
+                                {showTechPopup && (
+                                    <TechPopup>
+                                        <TechPopupHeader>
+                                            <TechPopupTitle>Select Technologies</TechPopupTitle>
                                             <CustomButton
-                                                onClick={() => updateField("skills", jobPost.skills.filter(s => s !== skill))}
-                                            >x</CustomButton>
-                                        </CustomListItem>
-                                    ))
-                                }
-                            </CustomList>
-                        </div>
-                        <div id={"technologies_container"} style={{position: 'relative'}}>
-                            <CustomLabelHeader>
-                                <CustomLabelText>
-                                    Technologies
-                                </CustomLabelText>
-                                <CustomButton
-                                    style={{fontSize: 30}}
-                                    onClick={() => setShowTechPopup(!showTechPopup)}
-                                >
-                                    +
-                                </CustomButton>
-                            </CustomLabelHeader>
+                                                onClick={() => setShowTechPopup(false)}
+                                                style={{fontSize: 24}}
+                                            >
+                                                ×
+                                            </CustomButton>
+                                        </TechPopupHeader>
+                                        <TechPopupList>
+                                            {allTechnologies
+                                                .filter(tech => !jobPost.technologies.find(t => t.id === tech.id))
+                                                .map(tech => (
+                                                    <TechPopupItem
+                                                        key={tech.id}
+                                                        onClick={() => addTechnology(tech)}
+                                                    >
+                                                        {tech.name}
+                                                    </TechPopupItem>
+                                                ))
+                                            }
+                                        </TechPopupList>
+                                    </TechPopup>
+                                )}
 
-                            {showTechPopup && (
-                                <TechPopup>
-                                    <TechPopupHeader>
-                                        <TechPopupTitle>Select Technologies</TechPopupTitle>
-                                        <CustomButton
-                                            onClick={() => setShowTechPopup(false)}
-                                            style={{fontSize: 24}}
-                                        >
-                                            ×
-                                        </CustomButton>
-                                    </TechPopupHeader>
-                                    <TechPopupList>
-                                        {allTechnologies
-                                            .filter(tech => !jobPost.technologies.find(t => t.id === tech.id))
-                                            .map(tech => (
-                                                <TechPopupItem
-                                                    key={tech.id}
-                                                    onClick={() => addTechnology(tech)}
-                                                >
-                                                    {tech.name}
-                                                </TechPopupItem>
-                                            ))
-                                        }
-                                    </TechPopupList>
-                                </TechPopup>
-                            )}
-
-                            <CustomList>
-                                {
-                                    jobPost.technologies.map(technology => (
-                                        <CustomListItem key={technology.id}>
-                                            <SkillText>
-                                                {technology.name}
-                                            </SkillText>
-                                            <CustomButton
-                                                onClick={() => updateField("technologies", jobPost.technologies.filter(t => t.id !== technology.id))}
-                                            >x</CustomButton>
-                                        </CustomListItem>
-                                    ))
-                                }
-                            </CustomList>
-                        </div>
-                        <div>
-                            <CustomLabelHeader>
-                                <CustomLabelText>
-                                    Interview Guide
-                                </CustomLabelText>
-                            </CustomLabelHeader>
-                            <SkillInputWrapper>
-                                <SkillInput
-                                    value={guide}
-                                    onChange={e => setGuide(e.target.value)}
-                                />
-                                <CustomButton onClick={() => {
-                                    updateField("guides", [guide, ...jobPost.guides])
-                                    setGuide("");
-                                }}>+</CustomButton>
-                            </SkillInputWrapper>
-                            <CustomList>
-                                {
-                                    jobPost.guides.map(guide => (
-                                        <CustomListItem>
-                                            <SkillText>
-                                                {guide}
-                                            </SkillText>
-                                            <CustomButton
-                                                onClick={() => updateField("guides", jobPost.guides.filter(g => g !== guide))}
-                                            >x</CustomButton>
-                                        </CustomListItem>
-                                    ))
-                                }
-                            </CustomList>
-                        </div>
-
+                                <CustomList>
+                                    {
+                                        jobPost.technologies.map(technology => (
+                                            <CustomListItem key={technology.id}>
+                                                <SkillText>
+                                                    {technology.name}
+                                                </SkillText>
+                                                <CustomButton
+                                                    onClick={() => updateField("technologies", jobPost.technologies.filter(t => t.id !== technology.id))}
+                                                >x</CustomButton>
+                                            </CustomListItem>
+                                        ))
+                                    }
+                                </CustomList>
+                            </div>
+                            <div>
+                                <CustomLabelHeader>
+                                    <CustomLabelText>
+                                        Interview Guide
+                                    </CustomLabelText>
+                                </CustomLabelHeader>
+                                <SkillInputWrapper>
+                                    <SkillInput
+                                        value={guide}
+                                        onChange={e => setGuide(e.target.value)}
+                                    />
+                                    <CustomButton onClick={() => {
+                                        updateField("guides", [guide, ...jobPost.guides])
+                                        setGuide("");
+                                    }}>+</CustomButton>
+                                </SkillInputWrapper>
+                                <CustomList>
+                                    {
+                                        jobPost.guides.map(guide => (
+                                            <CustomListItem>
+                                                <SkillText>
+                                                    {guide}
+                                                </SkillText>
+                                                <CustomButton
+                                                    onClick={() => updateField("guides", jobPost.guides.filter(g => g !== guide))}
+                                                >x</CustomButton>
+                                            </CustomListItem>
+                                        ))
+                                    }
+                                </CustomList>
+                            </div>
+                        </FormBody>
                         <UploadButton onClick={manageJobPost} disabled={isUploading}>
                             {isUploading ? <JumpingDots/> : 'UPLOAD'}
                         </UploadButton>
-                    </FormBody>
+                    </FormBodyWrapper>
                 </FormContainer>
             </PageBody>
         </AddPage>

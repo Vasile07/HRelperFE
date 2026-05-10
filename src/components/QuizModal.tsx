@@ -39,6 +39,7 @@ const AnswerText = styled.p`
 const Button = styled.button`
     position: absolute;
     background-color: #344966;
+    color: #ffffff;
     border-radius: 20px;
     width: 180px;
     padding: 15px 0;
