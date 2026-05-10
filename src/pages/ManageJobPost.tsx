@@ -280,17 +280,17 @@ const TechPopupItem = styled.div`
 
 const UploadButton = styled.button`
     width: fit-content;
-    padding: 15px 60px;
-    min-width: 200px;
-    min-height: 70px;
+    padding: 15px 50px;
+    min-width: 210px;
+    min-height: 65px;
     background-color: #344966;
     color: #FFF;
     position: sticky;
     align-self: flex-end;
     bottom: 20px;
-    right: 40px;
+    right: 20px;
     border-radius: 30px;
-    font-size: 30px;
+    font-size: 25px;
     font-family: "Jomolhari", serif;
     cursor: pointer;
     display: flex;

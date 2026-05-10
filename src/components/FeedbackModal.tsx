@@ -47,7 +47,7 @@ const ExitButton = styled.button`
     padding: 10px 0;
     font-size: 1rem;
     font-family: "Jomolhari", serif;
-
+    color: #fff;
 `;
 
 const Title = styled.p`
