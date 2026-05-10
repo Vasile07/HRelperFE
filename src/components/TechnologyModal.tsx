@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import React from "react";
+import React, {useEffect} from "react";
 import CustomModal from "./CustomModal.tsx";
 import type Technology from "../model/Technology.ts";
+import {logEvent} from "../analytics/logger";
 
 const TechName = styled.p`
     font-family: "Jomolhari", serif;
@@ -24,13 +25,43 @@ const TechDescription = styled.p`
 
 const TechnologyModal: React.FC<{
     tech: Technology;
+    correlationId: string;
     close: () => void;
-}> = ({tech, close}) => {
+}> = ({tech, correlationId, close}) => {
+
+    useEffect(() => {
+        const openTime = Date.now();
+
+        logEvent({
+            type: 'technology_modal_enter',
+            timestamp: new Date(openTime).toISOString(),
+            payload: {
+                correlationId,
+                technology: tech.name,
+            },
+        });
+
+        return () => {
+            const closeTime = Date.now();
+
+            logEvent({
+                type: 'technology_modal_exit',
+                timestamp: new Date(closeTime).toISOString(),
+                payload: {
+                    correlationId,
+                    technology: tech.name,
+                    durationMs: closeTime - openTime,
+                },
+            });
+        };
+    }, [tech.name]);
 
     const body = (
         <>
             <TechName>{tech.name}</TechName>
-            <TechDescription key={tech.description}>{tech.description}</TechDescription>
+            <TechDescription>
+                {tech.description}
+            </TechDescription>
         </>
     );
 

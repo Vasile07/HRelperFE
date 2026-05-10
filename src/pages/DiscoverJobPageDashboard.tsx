@@ -234,7 +234,7 @@ const DiscoverJobPageDashboard: React.FC = () => {
                 <HeaderBrand>
                     H<HeaderR>R</HeaderR>elper
                 </HeaderBrand>
-                <ProfileIcon onClick={() => navigate("/profile")}>
+                <ProfileIcon onClick={() => navigate("/Profile")}>
                     <svg viewBox="0 0 24 24" width="40" height="40" fill="#344966" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="7" r="4" />
                         <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
