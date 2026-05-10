@@ -7,54 +7,57 @@ import JobViewer from "./components/JobViewer.tsx";
 import Profile from "./pages/Profile.tsx";
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import {UserRole} from "./constants/UserRole.tsx";
+import RouteLogger from "./RouteLogger.tsx";
 
 function App() {
-  return (
-      <div style={{flex: 1, backgroundColor: "#fff"}}>
-        <Routes>
-            <Route path="/" element={<Navigate to="/DiscoverJobs" replace/>}/>
+    return (
+        <div style={{flex: 1, backgroundColor: "#fff"}}>
+            <RouteLogger>
+                <Routes>
+                    <Route path="/" element={<Navigate to="/DiscoverJobs" replace/>}/>
 
-            <Route path="/Login" element={<LoginPage/>}/>
-            <Route path="/Register" element={<RegisterNewAccount/>}/>
+                    <Route path="/Login" element={<LoginPage/>}/>
+                    <Route path="/Register" element={<RegisterNewAccount/>}/>
 
-            <Route path="/JobViewer/:id" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
-                    <JobViewer/>
-                </ProtectedRoute>
-            }/>
+                    <Route path="/JobViewer/:id" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
+                            <JobViewer/>
+                        </ProtectedRoute>
+                    }/>
 
-            <Route path="/ManageJobPost" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
-                    <ManageJobPost/>
-                </ProtectedRoute>
-            }/>
+                    <Route path="/ManageJobPost" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
+                            <ManageJobPost/>
+                        </ProtectedRoute>
+                    }/>
 
-            <Route path="/ManageJobPost/:jobId" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
-                    <ManageJobPost/>
-                </ProtectedRoute>
-            }/>
+                    <Route path="/ManageJobPost/:jobId" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager]}>
+                            <ManageJobPost/>
+                        </ProtectedRoute>
+                    }/>
 
-            <Route path="/DiscoverJobs" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
-                    <DiscoverJobPageDashboard/>
-                </ProtectedRoute>
-            }/>
+                    <Route path="/DiscoverJobs" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
+                            <DiscoverJobPageDashboard/>
+                        </ProtectedRoute>
+                    }/>
 
-            <Route path="/Profile" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
-                    <Profile/>
-                </ProtectedRoute>
-            }/>
+                    <Route path="/Profile" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
+                            <Profile/>
+                        </ProtectedRoute>
+                    }/>
 
-            <Route path="*" element={
-                <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
-                    <div>404 Not Found</div>
-                </ProtectedRoute>
-            }/>
-        </Routes>
-      </div>
-  );
+                    <Route path="*" element={
+                        <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
+                            <div>404 Not Found</div>
+                        </ProtectedRoute>
+                    }/>
+                </Routes>
+            </RouteLogger>
+        </div>
+    );
 }
 
 export default App;

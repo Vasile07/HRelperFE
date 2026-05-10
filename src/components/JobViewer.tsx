@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import styled from "styled-components";
 import api from "../api";
@@ -370,6 +370,8 @@ const JobViewer: React.FC = () => {
         }
     };
 
+    const correlationIdRef = useRef(crypto.randomUUID());
+
     if (loading) return <div style={{width: "100vw", height: "100vh"}}><LoadingComponent color={"#FFEEDB"}/></div>;
     if (!jobPost) return <PageContainer>Job not found or error loading data.</PageContainer>;
 
@@ -491,6 +493,7 @@ const JobViewer: React.FC = () => {
 
             {selectedTech && (
                 <TechnologyModal
+                    correlationId={correlationIdRef.current}
                     tech={selectedTech}
                     close={() => setSelectedTech(null)}
                 />
