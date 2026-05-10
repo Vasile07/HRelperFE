@@ -20,8 +20,19 @@ const AddPage = styled.div`
 const PageHeader = styled.div`
     display: flex;
     flex-direction: row;
-    padding: 20px 20px;
+    padding: 15px 0;
     flex-shrink: 0;
+`;
+
+const AppTitleButton = styled.button`
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+    margin-left: 35px;
 `;
 
 const HeaderText = styled.p`
@@ -469,9 +480,11 @@ const ManageJobPost: React.FC = () => {
     return (
         <AddPage>
             <PageHeader>
-                <HeaderText>H</HeaderText>
-                <HeaderText style={{color: "#344966"}}>R</HeaderText>
-                <HeaderText>elper</HeaderText>
+                <AppTitleButton onClick={() => navigate(-1)}>
+                    <HeaderText>H</HeaderText>
+                    <HeaderText style={{color: "#344966"}}>R</HeaderText>
+                    <HeaderText>elper</HeaderText>
+                </AppTitleButton>
             </PageHeader>
             <PageBody>
                 <ImageContainer>
