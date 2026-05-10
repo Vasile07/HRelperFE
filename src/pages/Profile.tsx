@@ -14,7 +14,7 @@ interface UserProfile {
 }
 
 const formatRole = (type: UserProfile["type"]): string =>
-    type === "hiring_manager" ? "HIRING MANAGER" : "RECRUITER";
+    type.replace("_", " ")
 
 // ─── Page Layout ──────────────────────────────────────────────────────────────
 
@@ -108,7 +108,8 @@ const UserEmail = styled.p`
 
 const RoleBadge = styled.p`
     font-family: "Jomolhari", serif;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    font-weight: bolder;
     color: #344966;
     letter-spacing: 1.5px;
     margin: 4px 0 8px;
@@ -142,12 +143,9 @@ const Profile: React.FC = () => {
     const [user, setUser] = useState<UserProfile | null>(null);
 
     useEffect(() => {
-        // api.get<UserProfile>("/users/me")
-        //     .then(res => setUser(res.data))
-        //     .catch(() => navigate("/Login"));
-
         const idToken = localStorage.getItem("idToken")
         const role = extractRoleFromJwt()
+        console.log(role)
         if (idToken) {
             const idTokenJwt = convertTokenToJwt(idToken)
             // eslint-disable-next-line react-hooks/set-state-in-effect
