@@ -142,7 +142,7 @@ const QuizModal: React.FC<{
 
     const correctAnswers = () => {
         return questions.map(q => q.answers)
-            .filter(answers => answers.map(a => a.correct === a.isSelected)
+            .filter(answers => answers.map(a => a.correct === (a.isSelected ?? false))
                 .reduce((prev, current) => prev && current, true))
             .length
     }
