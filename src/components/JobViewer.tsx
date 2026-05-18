@@ -350,7 +350,7 @@ const JobViewer: React.FC = () => {
         try {
             setIsDeleting(true);
             await api.delete(`/jobs/${id}`);
-            navigate("/Dashboard");
+            navigate("/DiscoverJobs");
         } catch (err) {
             console.error("Axios delete error:", err);
             alert("Could not delete job. Please try again.");
