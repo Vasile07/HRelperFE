@@ -125,7 +125,8 @@ const FormBody = styled.div`
     scrollbar-color: #344966 transparent;
 `;
 
-const CustomDropdown = styled.select`
+/*const CustomDropdown = styled.select`
+    /* issues on safary *\/
     width: 100%;
     background-color: #ffffff;
     color: #000;
@@ -134,6 +135,27 @@ const CustomDropdown = styled.select`
     font-size: 1.5rem;
     border-color: #000;
     padding: 0 15px;
+`;*/
+
+const CustomDropdown = styled.select`
+    width: 100%;
+    background-color: #ffffff;
+    color: #000;
+    border-width: 0;
+    border-bottom-width: 3px;
+    font-size: 1.5rem;
+    border-color: #000;
+    padding: 0 40px 0 15px;
+
+    /* strips Safari/Chrome native appearance — fixes squished text and double arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    /* single custom arrow via inline SVG background */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
 `;
 
 const CustomOption = styled.option`
