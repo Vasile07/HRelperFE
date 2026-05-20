@@ -5,6 +5,7 @@ import DiscoverJobPageDashboard from "./pages/DiscoverJobPageDashboard.tsx";
 import LoginPage from "./components/LoginPage.tsx";
 import JobViewer from "./components/JobViewer.tsx";
 import Profile from "./pages/Profile.tsx";
+import AnalyticsDashboard from "./analytics/AnalyticsDashboard.jsx"
 import ProtectedRoute from "./ProtectedRoute.tsx";
 import {UserRole} from "./constants/UserRole.tsx";
 import RouteLogger from "./RouteLogger.tsx";
@@ -46,6 +47,12 @@ function App() {
                     <Route path="/Profile" element={
                         <ProtectedRoute allowedRoles={[UserRole.HiringManager, UserRole.Recruiter]}>
                             <Profile/>
+                        </ProtectedRoute>
+                    }/>
+
+                    <Route path="/AnalyticsDashboard" element={
+                        <ProtectedRoute allowedRoles={[UserRole.Admin]}>
+                            <AnalyticsDashboard/>
                         </ProtectedRoute>
                     }/>
 

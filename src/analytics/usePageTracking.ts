@@ -6,28 +6,30 @@ export const usePageTracking = () => {
     const location = useLocation();
 
     useEffect(() => {
-        const sessionId = crypto.randomUUID();
-        const entryTime = Date.now();
+        if (location.pathname != 'AnalyticsDashboard') {
+            const sessionId = crypto.randomUUID();
+            const entryTime = Date.now();
 
-        logEvent({
-            type: 'page_enter',
-            timestamp: new Date().toISOString(),
-            payload: {
-                sessionId,
-                path: location.pathname,
-            },
-        });
-
-        return () => {
             logEvent({
-                type: 'page_exit',
+                type: 'page_enter',
                 timestamp: new Date().toISOString(),
                 payload: {
                     sessionId,
                     path: location.pathname,
-                    durationMs: Date.now() - entryTime,
                 },
             });
-        };
+
+            return () => {
+                logEvent({
+                    type: 'page_exit',
+                    timestamp: new Date().toISOString(),
+                    payload: {
+                        sessionId,
+                        path: location.pathname,
+                        durationMs: Date.now() - entryTime,
+                    },
+                });
+            };
+        }
     }, [location.pathname]);
 };
