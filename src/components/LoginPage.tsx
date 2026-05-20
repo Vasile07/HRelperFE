@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import api from "../api";
 import loginImage from "../assets/tipi_tipe_care_se_uita.png";
+import extractRoleFromJwt from "../extractRoleFromJwt.ts";
+import {UserRole} from "../constants/UserRole.tsx";
 
 // ===================== STYLED COMPONENTS =====================
 
@@ -143,7 +145,11 @@ const LoginPage = () => {
 
             if (accessToken) {
                 localStorage.setItem("token", accessToken);
-                navigate("/DiscoverJobs");
+                const IS_ADMIN = extractRoleFromJwt() === UserRole.Admin;
+                if (IS_ADMIN)
+                    navigate("/AnalyticsDashboard")
+                else
+                    navigate("/DiscoverJobs");
             }
         } catch (error : any)  {
             // 4. Axios error handling
